@@ -361,9 +361,14 @@ class CrossAttentionFusion(nn.Module):
         attention_scores = attention_scores / (self.attention_head_size ** 0.5)
         
         # Apply attention mask
-        attention_mask_expanded = attention_mask.unsqueeze(1).unsqueeze(2)
-        img_attention_mask_expanded = img_attention_mask.unsqueeze(1).unsqueeze(3)
+        # For text-to-image attention, we only need to mask the image features
+        # attention_scores shape: [batch_size, num_heads, text_seq_len, img_seq_len]
         
+        # Create proper mask: expand img_attention_mask to match attention_scores dimensions
+        batch_size, num_heads, text_seq_len, img_seq_len = attention_scores.shape
+        img_attention_mask_expanded = img_attention_mask.unsqueeze(1).unsqueeze(2).expand(-1, num_heads, text_seq_len, -1)
+        
+        # Apply text-to-image attention mask
         attention_scores = attention_scores.masked_fill(img_attention_mask_expanded == 0, -10000.0)
         
         # Normalize attention scores to probabilities
