@@ -116,7 +116,7 @@ hateful-memes-detection/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/hateful-memes-detection.git
+git clone https://github.com/MARafey/Hateful-Memes-Detection.git
 cd hateful-memes-detection
 ```
 
