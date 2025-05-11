@@ -285,7 +285,9 @@ class Trainer:
         Args:
             checkpoint_path: Path to the checkpoint file
         """
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
+        # Set weights_only=False to handle NumPy scalars in the checkpoint
+        # Note: This is less secure but necessary for backward compatibility with older checkpoints
+        checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
         
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

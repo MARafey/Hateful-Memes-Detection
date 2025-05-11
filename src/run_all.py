@@ -279,7 +279,7 @@ def evaluate_all_models(args, device):
             continue
         
         # Load model weights
-        checkpoint = torch.load(model_path, map_location=device)
+        checkpoint = torch.load(model_path, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint['model_state_dict'])
         
         # Set model to evaluation mode
@@ -401,7 +401,7 @@ def create_interface(args, device):
             continue
         
         # Load model weights
-        checkpoint = torch.load(model_path, map_location=device)
+        checkpoint = torch.load(model_path, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint['model_state_dict'])
         model.eval()
         
