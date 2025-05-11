@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 from datetime import datetime
 
-from src.utils.trainer import Trainer
+from utils.trainer import Trainer
 
 class GridSearch:
     """

@@ -6,12 +6,12 @@ import random
 import numpy as np
 from datetime import datetime
 
-from src.utils.dataset import get_dataloader
-from src.utils.trainer import Trainer
-from src.models.text_models import TextOnlyModel, TextWithPoolingModel
-from src.models.image_models import ImageOnlyModel, ResNetWithAttention
-from src.models.late_fusion_models import LateFusionModel, LateFusionWithAttention
-from src.models.early_fusion_models import EarlyFusionModel, CrossAttentionFusion
+from utils.dataset import get_dataloader
+from utils.trainer import Trainer
+from models.text_models import TextOnlyModel, TextWithPoolingModel
+from models.image_models import ImageOnlyModel, ResNetWithAttention
+from models.late_fusion_models import LateFusionModel, LateFusionWithAttention
+from models.early_fusion_models import EarlyFusionModel, CrossAttentionFusion
 
 def set_seed(seed):
     """

@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from src.models.text_models import TextOnlyModel, TextWithPoolingModel
-from src.models.image_models import ImageOnlyModel, ResNetWithAttention
+from models.text_models import TextOnlyModel, TextWithPoolingModel
+from models.image_models import ImageOnlyModel, ResNetWithAttention
 
 class LateFusionModel(nn.Module):
     """
