@@ -37,11 +37,12 @@ def plot_confusion_matrix(cm, class_names, model_name, output_dir):
     plt.title(f'Confusion Matrix - {model_name}')
     
     # Create directory if it doesn't exist
-    os.makedirs(os.path.join(output_dir, 'confusion_matrices'), exist_ok=True)
+    confusion_dir = os.path.join(output_dir, 'confusion_matrices')
+    os.makedirs(confusion_dir, exist_ok=True)
     
     # Save plot
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'confusion_matrices', f'{model_name}_confusion_matrix.png'), dpi=300)
+    plt.savefig(os.path.join(confusion_dir, f'{model_name}_confusion_matrix.png'), dpi=300)
     plt.close()
 
 def summarize_model_architecture(model, model_name, input_shape, output_dir):
@@ -55,12 +56,13 @@ def summarize_model_architecture(model, model_name, input_shape, output_dir):
         output_dir: Directory to save the summary
     """
     # Create directory if it doesn't exist
-    os.makedirs(os.path.join(output_dir, 'model_architectures'), exist_ok=True)
+    architecture_dir = os.path.join(output_dir, 'model_architectures')
+    os.makedirs(architecture_dir, exist_ok=True)
     
     # Redirect stdout to file
     import sys
     original_stdout = sys.stdout
-    with open(os.path.join(output_dir, 'model_architectures', f'{model_name}_architecture.txt'), 'w') as f:
+    with open(os.path.join(architecture_dir, f'{model_name}_architecture.txt'), 'w') as f:
         sys.stdout = f
         
         # Print model architecture
@@ -132,8 +134,9 @@ def evaluate_model(model, model_name, test_loader, device, output_dir):
     report = classification_report(all_labels, all_preds, target_names=['Non-hateful', 'Hateful'], output_dict=True)
     
     # Save report to file
-    os.makedirs(os.path.join(output_dir, 'classification_reports'), exist_ok=True)
-    with open(os.path.join(output_dir, 'classification_reports', f'{model_name}_report.json'), 'w') as f:
+    reports_dir = os.path.join(output_dir, 'classification_reports')
+    os.makedirs(reports_dir, exist_ok=True)
+    with open(os.path.join(reports_dir, f'{model_name}_report.json'), 'w') as f:
         json.dump(report, f, indent=4)
     
     return {
@@ -154,6 +157,10 @@ def evaluate_all_models(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
+    # Create report directory
+    report_dir = os.path.join(args.output_dir, 'model_report')
+    os.makedirs(report_dir, exist_ok=True)
+    
     # Get test dataloader
     test_loader = get_dataloader(
         data_path=os.path.join(args.data_dir, "test.jsonl"),
@@ -165,7 +172,7 @@ def evaluate_all_models(args):
         shuffle=False
     )
     
-    # Define model configurations
+    # Use the same model naming and configuration as in run_all.py
     model_configs = [
         {
             'name': 'text_only',
@@ -222,6 +229,7 @@ def evaluate_all_models(args):
     
     for config in model_configs:
         model_name = config['name']
+        # Path to the best model following the pattern in run_all.py
         model_path = os.path.join(args.output_dir, model_name, f"{model_name}_best.pth")
         
         if not os.path.exists(model_path):
@@ -238,10 +246,10 @@ def evaluate_all_models(args):
         model.load_state_dict(checkpoint['model_state_dict'])
         
         # Summarize model architecture
-        summarize_model_architecture(model, model_name, config['input_shape'], args.output_dir)
+        summarize_model_architecture(model, model_name, config['input_shape'], report_dir)
         
         # Evaluate model
-        metrics = evaluate_model(model, model_name, test_loader, device, args.output_dir)
+        metrics = evaluate_model(model, model_name, test_loader, device, report_dir)
         results[model_name] = metrics
         
         print(f"Metrics for {model_name}:")
@@ -250,11 +258,11 @@ def evaluate_all_models(args):
         print()
     
     # Save overall results
-    with open(os.path.join(args.output_dir, "model_evaluation_results.json"), 'w') as f:
+    with open(os.path.join(report_dir, "model_evaluation_results.json"), 'w') as f:
         json.dump(results, f, indent=4)
         
     # Create comparative plots
-    create_comparative_plots(results, args.output_dir)
+    create_comparative_plots(results, report_dir)
     
     return results
 
@@ -266,7 +274,8 @@ def create_comparative_plots(results, output_dir):
         results: Dictionary with model evaluation results
         output_dir: Directory to save plots
     """
-    os.makedirs(os.path.join(output_dir, 'comparative_plots'), exist_ok=True)
+    plots_dir = os.path.join(output_dir, 'comparative_plots')
+    os.makedirs(plots_dir, exist_ok=True)
     
     # Create data for plotting
     models = list(results.keys())
@@ -288,7 +297,7 @@ def create_comparative_plots(results, output_dir):
             plt.text(i, v + 0.01, f'{v:.3f}', ha='center')
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'comparative_plots', f'comparative_{metric}.png'), dpi=300)
+        plt.savefig(os.path.join(plots_dir, f'comparative_{metric}.png'), dpi=300)
         plt.close()
     
     # Create a single plot with all metrics
@@ -309,7 +318,7 @@ def create_comparative_plots(results, output_dir):
     ax.grid(axis='y', alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'comparative_plots', 'all_metrics_comparison.png'), dpi=300)
+    plt.savefig(os.path.join(plots_dir, 'all_metrics_comparison.png'), dpi=300)
     plt.close()
 
 def parse_args():
