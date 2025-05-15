@@ -198,7 +198,7 @@ Example grid configuration file:
 
 ### Evaluation
 
-Models are automatically evaluated on the validation set during training. The best model checkpoint is saved and can be used for inference. The evaluation uses AUROC as the primary metric, as recommended for the challenge.
+Models are automatically evaluated on the validation set during training. The best model checkpoint is saved and can be used for inference. The evaluation uses AUROC as the primary metric.
 
 ### TensorBoard Visualization
 

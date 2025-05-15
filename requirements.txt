@@ -16,4 +16,5 @@ albumentations>=1.1.0
 timm>=0.5.4
 jupyter>=1.0.0
 ipykernel>=6.9.0
-gradio>=3.35.0 
+gradio>=3.35.0
+torchsummary>=1.5.1 
