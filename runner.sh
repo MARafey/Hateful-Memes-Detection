@@ -13,5 +13,8 @@ python src/run_all.py --train --skip_models text_only image_only
 # Run with custom epochs and learning rate
 python src/run_all.py --train --epochs 20 --learning_rate 1e-5
 
-# Generate confusion matrices and model architecture reports
+# Generate confusion matrices and model architecture reports (using test set)
 python src/model_evaluation.py --output_dir "Confusion Matrix"
+
+# Generate confusion matrices with metrics using validation set
+python src/model_evaluation.py --output_dir "Confusion Matrix" --use_validation
