@@ -158,7 +158,7 @@ def evaluate_all_models(args):
     print(f"Using device: {device}")
     
     # Create report directory
-    report_dir = os.path.join(args.output_dir, 'model_report')
+    report_dir = os.path.join(args.output_dir)
     os.makedirs(report_dir, exist_ok=True)
     
     # Get test dataloader
@@ -171,6 +171,9 @@ def evaluate_all_models(args):
         num_workers=args.num_workers,
         shuffle=False
     )
+    
+    # Models are stored in 'outputs' directory, regardless of the output_dir parameter
+    models_dir = 'outputs'
     
     # Use the same model naming and configuration as in run_all.py
     model_configs = [
@@ -229,8 +232,8 @@ def evaluate_all_models(args):
     
     for config in model_configs:
         model_name = config['name']
-        # Path to the best model following the pattern in run_all.py
-        model_path = os.path.join(args.output_dir, model_name, f"{model_name}_best.pth")
+        # Path to the best model following the pattern in run_all.py, but using models_dir
+        model_path = os.path.join(models_dir, model_name, f"{model_name}_best.pth")
         
         if not os.path.exists(model_path):
             print(f"Model {model_name} not found at {model_path}, skipping evaluation.")
@@ -242,7 +245,7 @@ def evaluate_all_models(args):
         model = config['class'](**config['params']).to(device)
         
         # Load model weights
-        checkpoint = torch.load(model_path, map_location=device)
+        checkpoint = torch.load(model_path, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint['model_state_dict'])
         
         # Summarize model architecture
@@ -332,14 +335,14 @@ def parse_args():
     
     # Data parameters
     parser.add_argument('--data_dir', type=str, default='data', help='Directory containing data files')
-    parser.add_argument('--img_dir', type=str, default='data/img', help='Directory containing images')
+    parser.add_argument('--img_dir', type=str, default='data', help='Directory containing images')
     
     # Model parameters
     parser.add_argument('--text_model', type=str, default='bert-base-uncased', help='Text model name')
     parser.add_argument('--img_model', type=str, default='resnet50', help='Image model name')
     
     # Output parameters
-    parser.add_argument('--output_dir', type=str, default='outputs', help='Output directory')
+    parser.add_argument('--output_dir', type=str, default='outputs', help='Directory where to save evaluation reports and visualizations')
     
     # Other parameters
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size')

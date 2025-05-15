@@ -14,4 +14,4 @@ python src/run_all.py --train --skip_models text_only image_only
 python src/run_all.py --train --epochs 20 --learning_rate 1e-5
 
 # Generate confusion matrices and model architecture reports
-python src/model_evaluation.py --output_dir outputs
+python src/model_evaluation.py --output_dir "Confusion Matrix"
